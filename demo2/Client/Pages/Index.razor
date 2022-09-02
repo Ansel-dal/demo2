@@ -1,0 +1,34 @@
+﻿@using demo2.Shared.Models
+@using demo2.Shared.Response
+@inject HttpClient http
+@page "/"
+
+<EditForm Model="@ejemplo1" OnValidSubmit="mandar">
+    <InputText @bind-Value="@ejemplo1.Nombre"></InputText>
+
+    <button class="btn btn-outline-primary" type="submit"> Send</button>
+</EditForm>
+
+@if (oRespuesta != null){
+    @if (oRespuesta.List !=null)
+    {
+        foreach(var producto in oRespuesta.List)
+        {
+            @producto.Nombre<br />
+        }
+}else{
+        <a>@oRespuesta.Mensaje</a>
+}
+}
+@code{
+    string hojaderuta;
+    Hojaderutum ejemplo1 = new();
+    Respuesta<List<Producto>> oRespuesta = new();
+
+    async Task mandar()
+    {
+        var response = await http.PostAsJsonAsync<Hojaderutum>("/api/hojaderuta", ejemplo1);
+        oRespuesta = response.Content.ReadFromJsonAsync<Respuesta<List<Producto>>>().Result;
+        Console.WriteLine(oRespuesta);
+    }
+}
